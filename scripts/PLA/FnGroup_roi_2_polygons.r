@@ -1,0 +1,127 @@
+## Function group: Turning Fiji ROI (Region of Interest) into polygons object (sp or sf package)
+
+# The general input -- `roi_df` -- is a data frame object recording the coordinate of each point within individual ROI.
+#   This code design to use the coordinate output from the Fiji script: nuclear_selector.ijm
+#   This should containing the following columns (in tidy format):
+#     ROI ID(s)
+#     coordinate -- i.e., x, y, and z columns
+
+roi_extract_xy_coord <- function(roi_df, roi_id){
+  # Extract XY coordinate from a single ROI ID.
+  # NB: This function is likely used as a dependencies of other functions
+  df <- roi_df %>% 
+    dplyr::filter(roi == roi_id) %>% 
+    {dplyr::add_row(., .[1, ])} # required for closing the polygons in R
+  
+  m <- as.matrix(df[ , c("x", "y")])
+  return(m)
+}
+
+## DEPRECATED: Keep for historical reason
+# roi_2_sp_polygons <- function(df, roi_id){
+#   xy_coord_m <- roi_extract_xy_coord(df, roi_id)
+#   sp_pg <- Polygon(xy_coord_m)
+#   return(sp_pg)
+# }
+
+roi_2_polygons <- function(roi_df, roi_id_vec){
+  # Extract and create multiple polygon object (by sf package) from the given list of ROI IDs
+  # Dependencies:
+  #   roi_extract_xy_coord
+  
+  # NB: This function is likely used as a dependencies of other functions
+  
+  # Extract XY coordinate for all roi_id
+  xy_coord_list <- lapply(X=roi_id_vec, FUN=function(x){roi_extract_xy_coord(roi_df, roi_id=x)})
+  names(xy_coord_list) <- roi_id_vec
+  
+  # QC
+  n_points_vec <- sapply(xy_coord_list, nrow)
+  empty_roi <- n_points_vec == 0
+  if(any(empty_roi)){
+    warning("Some ROIs didn't return XY coordinate\n")
+    xy_coord_list <- xy_coord_list[!empty_roi]
+    n_points_vec <- n_points_vec[!empty_roi]
+  }
+  
+  if(length(xy_coord_list) == 0){
+    stop("No XY coordinate extracted from the given ROI vector")
+  }
+  
+  # Converting to polygons object (sp package)
+  # PG = Polygon
+  sp_PG <- lapply(roi_id_vec, FUN=function(x){
+    Polygons(list(Polygon(xy_coord_list[[x]])), ID=x)
+  })
+  names(sp_PG) <- roi_id_vec
+  sp_spg <- SpatialPolygons(sp_PG)
+  
+  # Converting to polygons object (sf package)
+  sf_pg <- suppressWarnings(st_as_sf(sp_spg))
+  
+  return(sf_pg)
+  
+  # Initialy tryiing to do it this way, but didn't seems to compatible with our goal
+  # pg <- st_polygon(xy_coord_list)
+}
+
+
+polygonize_roi_df <- function(roi_df, keep_other_columns=FALSE){
+  # old function name: df_2_polygons
+  # Transforming plain ROI coordinate table -- 
+  # Collapsing the x,y,z positioning information of ROI table into polygon geometry object (sf package)
+  # ASSUMPTION: each ROI can only locate on a single z-stack
+  
+  # NB: This function is likely used as a dependencies of other functions
+  
+  # simplify the ROI information
+  unq_roi_id <- unique(roi_df$roi)
+  if(keep_other_columns){
+    roi_info_df <- unique(dplyr::select(roi_df, -x, -y))  
+  }else{
+    roi_info_df <- unique(dplyr::select(roi_df, roi, z))  
+  }
+  
+  
+  ## DEPRECATED: only keep for historical reason
+  # # Extract polygon for each ROI
+  # geom_df <- data.frame()
+  # for(i in seq_along(unq_roi_id)){
+  #   cur_roi <- unq_roi_id[i]
+  #   geom_df <- data.frame(roi = cur_roi,
+  #                         polygons = roi_2_polygons(roi_df, roi_id_vec = unq_roi_id[i])) %>% 
+  #     rbind(geom_df, .)
+  # }
+  # geom_df <- as_tibble(geom_df)
+  
+  # Vectorized version:
+  geom_df <- tibble(roi = unq_roi_id, geometry = roi_2_polygons(roi_df, roi_id_vec=unq_roi_id)$geometry)
+  
+  roi_info_df <- left_join(roi_info_df, geom_df, by="roi")
+  return(roi_info_df)
+}
+
+
+pg_2_coord_df <- function(st_df){
+  # Retrieve xy coordinate from dataframe with geometry field (st polygon object)
+  if(!all(c("x", "y") %in% colnames(st_df))){
+    if("geometry" %in% colnames(st_df)){
+      # # This is technically working, but I don't want to use L2 field as an indicator of the ROI
+      # x = as_tibble(st_coordinates(feat_df$geometry))
+      
+      roi_coord_df <- st_df %>% 
+        group_by(roi) %>% 
+        reframe(x = st_coordinates(geometry)[ , "X"],
+                y = st_coordinates(geometry)[ , "Y"])
+      
+      feat_coord_df <- left_join(dplyr::select(st_df, -geometry), roi_coord_df, by="roi")
+    }else{
+      stop("Input doesn't have required column")
+    }
+  }else{
+    feat_coord_df <- feature_df
+  }
+  
+  return(feat_coord_df)
+}
+
