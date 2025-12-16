@@ -1,0 +1,10 @@
+# The file paths here have somewhat been annonimized. Please take it as a guideline for setting up the DiffBind analysis,,,,,,,,,,
+SampleID,Tissue,Factor,Condition,Treatment,Replicate,bamReads,ControlID,bamControl,Peaks,PeakCaller
+ATAC_8C_K_KD_rep1,8C,ATAC,Klf5_KD,Klf5_KD,1,./chrom_mapping_ATAC_NKKD/031_BAM_rmDUP/ATAC_8C_K_KD_rep1_trimmed_filt_sort_rmdup.bam,,,./chrom_mapping_ATAC_NKKD/060_MACS2_PEAK_CALLING/narrow/ATAC_8C_K_KD_rep1_macs2_peaks.narrowPeak,macs
+ATAC_8C_K_KD_rep2,8C,ATAC,Klf5_KD,Klf5_KD,2,./chrom_mapping_ATAC_NKKD/031_BAM_rmDUP/ATAC_8C_K_KD_rep2_trimmed_filt_sort_rmdup.bam,,,./chrom_mapping_ATAC_NKKD/060_MACS2_PEAK_CALLING/narrow/ATAC_8C_K_KD_rep2_macs2_peaks.narrowPeak,macs
+ATAC_8C_NK_DKD_rep1,8C,ATAC,dKD,dKD,1,./chrom_mapping_ATAC_NKKD/031_BAM_rmDUP/ATAC_8C_NK_DKD_rep1_trimmed_filt_sort_rmdup.bam,,,./chrom_mapping_ATAC_NKKD/060_MACS2_PEAK_CALLING/narrow/ATAC_8C_NK_DKD_rep1_macs2_peaks.narrowPeak,macs
+ATAC_8C_NK_DKD_rep2,8C,ATAC,dKD,dKD,2,./chrom_mapping_ATAC_NKKD/031_BAM_rmDUP/ATAC_8C_NK_DKD_rep2_trimmed_filt_sort_rmdup.bam,,,./chrom_mapping_ATAC_NKKD/060_MACS2_PEAK_CALLING/narrow/ATAC_8C_NK_DKD_rep2_macs2_peaks.narrowPeak,macs
+ATAC_8C_NT_rep1,8C,ATAC,NT_ctrl,NT_ctrl,1,./chrom_mapping_ATAC_NKKD/031_BAM_rmDUP/ATAC_8C_NT_rep1_trimmed_filt_sort_rmdup.bam,,,./chrom_mapping_ATAC_NKKD/060_MACS2_PEAK_CALLING/narrow/ATAC_8C_NT_rep1_macs2_peaks.narrowPeak,macs
+ATAC_8C_NT_rep2,8C,ATAC,NT_ctrl,NT_ctrl,2,./chrom_mapping_ATAC_NKKD/031_BAM_rmDUP/ATAC_8C_NT_rep2_trimmed_filt_sort_rmdup.bam,,,./chrom_mapping_ATAC_NKKD/060_MACS2_PEAK_CALLING/narrow/ATAC_8C_NT_rep2_macs2_peaks.narrowPeak,macs
+ATAC_8C_N_KD_rep1,8C,ATAC,Nr5a2_KD,Nr5a2_KD,1,./chrom_mapping_ATAC_NKKD/031_BAM_rmDUP/ATAC_8C_N_KD_rep1_trimmed_filt_sort_rmdup.bam,,,./chrom_mapping_ATAC_NKKD/060_MACS2_PEAK_CALLING/narrow/ATAC_8C_N_KD_rep1_macs2_peaks.narrowPeak,macs
+ATAC_8C_N_KD_rep2,8C,ATAC,Nr5a2_KD,Nr5a2_KD,2,./chrom_mapping_ATAC_NKKD/031_BAM_rmDUP/ATAC_8C_N_KD_rep2_trimmed_filt_sort_rmdup.bam,,,./chrom_mapping_ATAC_NKKD/060_MACS2_PEAK_CALLING/narrow/ATAC_8C_N_KD_rep2_macs2_peaks.narrowPeak,macs
