@@ -24,7 +24,7 @@ suppressPackageStartupMessages({
 
 
 
-wd <- "."
+wd <- "." # Assuming the root of this GitHub repo
 script_dir <- paste0(wd, "/scripts")
 
 source(paste0(script_dir, "/brewer_pal_2.r"))
